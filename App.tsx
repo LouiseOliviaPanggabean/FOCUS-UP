@@ -9,7 +9,6 @@ import TipsAndTricks from './components/TipsAndTricks';
 import Sidebar from './components/layout/Sidebar';
 import Dashboard from './components/dashboard/Dashboard';
 import { useTheme } from './hooks/useTheme';
-import streamlit as st
 
 const App: React.FC = () => {
   useTheme(); // Initialize and apply theme from local storage
