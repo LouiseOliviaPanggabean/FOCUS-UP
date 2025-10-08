@@ -1,1 +1,1 @@
-# This is a React.js project. This file is not used.
+Flask>=2.0
