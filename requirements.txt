@@ -1,3 +1,1 @@
-
-streamlit
-pandas
+# This is a React.js project. This file is not used.
