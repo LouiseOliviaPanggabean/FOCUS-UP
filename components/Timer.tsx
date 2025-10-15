@@ -7,13 +7,14 @@ import { MOTIVATIONAL_MESSAGES } from '../constants';
 interface TimerProps {
   settings: SessionSettings;
   onEndSession: (focusedMinutes: number) => void;
+  isRunning: boolean;
+  setIsRunning: (isRunning: boolean) => void;
 }
 
 type TimerMode = 'focus' | 'break';
 
-const Timer: React.FC<TimerProps> = ({ settings, onEndSession }) => {
+const Timer: React.FC<TimerProps> = ({ settings, onEndSession, isRunning, setIsRunning }) => {
   const [mode, setMode] = useState<TimerMode>('focus');
-  const [isActive, setIsActive] = useState(true);
   const [secondsLeft, setSecondsLeft] = useState(settings.focusMinutes * 60);
   const [totalFocusSeconds, setTotalFocusSeconds] = useState(0);
 
@@ -26,7 +27,7 @@ const Timer: React.FC<TimerProps> = ({ settings, onEndSession }) => {
   }, [mode, settings.focusMinutes, settings.breakMinutes]);
 
   useEffect(() => {
-    if (!isActive) return;
+    if (!isRunning) return;
 
     if (secondsLeft <= 0) {
       new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3').play().catch(e => console.error("Audio play failed", e));
@@ -42,15 +43,15 @@ const Timer: React.FC<TimerProps> = ({ settings, onEndSession }) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isActive, secondsLeft, mode, switchMode]);
+  }, [isRunning, secondsLeft, mode, switchMode]);
 
   const handleStop = () => {
-    setIsActive(false);
+    setIsRunning(false);
     onEndSession(Math.floor(totalFocusSeconds / 60));
   };
   
   const handleToggle = () => {
-    setIsActive(!isActive);
+    setIsRunning(!isRunning);
   };
   
   const minutes = Math.floor(secondsLeft / 60);
@@ -80,7 +81,7 @@ const Timer: React.FC<TimerProps> = ({ settings, onEndSession }) => {
 
       <div className="flex space-x-6 mb-8">
         <button onClick={handleToggle} className="p-4 bg-gray-100 dark:bg-gray-700 rounded-full text-primary hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-          {isActive ? <PauseIcon /> : <PlayIcon />}
+          {isRunning ? <PauseIcon /> : <PlayIcon />}
         </button>
         <button onClick={handleStop} className="p-4 bg-danger rounded-full text-white hover:bg-opacity-90 transition-colors">
           <StopIcon />

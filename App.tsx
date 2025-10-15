@@ -29,6 +29,7 @@ const App: React.FC = () => {
   
   const [settings, setSettings] = useState<SessionSettings | null>(null);
   const [isSessionActive, setIsSessionActive] = useState(false);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
   
   const showNotification = (message: string) => {
     setNotification(message);
@@ -38,6 +39,7 @@ const App: React.FC = () => {
   const handleLogout = () => {
     setCurrentUser(null);
     setIsSessionActive(false);
+    setIsTimerRunning(false);
     setSettings(null);
     setActiveView('dashboard');
   };
@@ -49,6 +51,7 @@ const App: React.FC = () => {
       dailyTargetMinutes: newSettings.targetMinutes,
     }));
     setIsSessionActive(true);
+    setIsTimerRunning(true);
   };
 
   const endSession = (focusMinutes: number) => {
@@ -68,6 +71,7 @@ const App: React.FC = () => {
       }));
     }
     setIsSessionActive(false);
+    setIsTimerRunning(false);
     setSettings(null);
     setActiveView('dashboard'); // Return to dashboard after session
   };
@@ -111,13 +115,18 @@ const App: React.FC = () => {
         activeView={activeView} 
         setActiveView={setActiveView}
         onLogout={handleLogout}
-        isSessionActive={isSessionActive}
+        isSessionActive={isTimerRunning}
         onNavAttempt={showNotification}
       />
       <main className="flex-1 p-6 sm:p-10 overflow-y-auto">
         {isSessionActive && settings ? (
           <div className="bg-white dark:bg-dark-card rounded-lg shadow-md p-6 max-w-2xl mx-auto">
-            <Timer settings={settings} onEndSession={endSession} />
+            <Timer 
+              settings={settings} 
+              onEndSession={endSession}
+              isRunning={isTimerRunning}
+              setIsRunning={setIsTimerRunning}
+            />
           </div>
         ) : (
           renderView()
