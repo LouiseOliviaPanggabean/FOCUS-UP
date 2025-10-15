@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { User } from '../../types';
+import { EyeIcon, EyeOffIcon } from '../icons/SidebarIcons';
 
 interface LoginProps {
   onLoginSuccess: (user: User) => void;
+  successMessage?: string;
 }
 
-const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
+const Login: React.FC<LoginProps> = ({ onLoginSuccess, successMessage }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [users] = useLocalStorage<User[]>('focusup-users', []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -28,6 +31,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && <p className="text-danger text-sm text-center">{error}</p>}
+      {successMessage && <p className="text-success text-sm text-center">{successMessage}</p>}
       <div>
         <label htmlFor="email-login" className="block text-sm font-medium text-muted dark:text-dark-muted mb-2">
           Email
@@ -45,14 +49,24 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         <label htmlFor="password-login" className="block text-sm font-medium text-muted dark:text-dark-muted mb-2">
           Password
         </label>
-        <input
-          type="password"
-          id="password-login"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full bg-light dark:bg-dark-bg border-gray-300 dark:border-gray-600 text-dark dark:text-dark-text rounded-md p-2 focus:ring-primary focus:border-primary"
-        />
+        <div className="relative">
+          <input
+            type={isPasswordVisible ? 'text' : 'password'}
+            id="password-login"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="w-full bg-light dark:bg-dark-bg border-gray-300 dark:border-gray-600 text-dark dark:text-dark-text rounded-md p-2 pr-10 focus:ring-primary focus:border-primary"
+          />
+          <button
+            type="button"
+            onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted dark:text-dark-muted"
+            aria-label={isPasswordVisible ? "Sembunyikan password" : "Tampilkan password"}
+          >
+            {isPasswordVisible ? <EyeOffIcon /> : <EyeIcon />}
+          </button>
+        </div>
       </div>
       <button type="submit" className="w-full bg-primary text-white font-bold py-3 px-4 rounded-md hover:bg-opacity-90 transition-colors duration-300">
         Sign In

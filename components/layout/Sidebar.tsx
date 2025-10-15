@@ -7,6 +7,7 @@ import {
     PlayOutlineIcon, 
     ChartIcon, 
     LightbulbIcon,
+    NoteIcon,
     SunIcon,
     MoonIcon,
     LogoutIcon
@@ -16,6 +17,8 @@ interface SidebarProps {
   activeView: View;
   setActiveView: (view: View) => void;
   onLogout: () => void;
+  isSessionActive: boolean;
+  onNavAttempt: (message: string) => void;
 }
 
 const NavItem: React.FC<{
@@ -24,22 +27,41 @@ const NavItem: React.FC<{
   icon: React.ReactNode;
   activeView: View;
   onClick: (view: View) => void;
-}> = ({ view, label, icon, activeView, onClick }) => (
-  <li
-    onClick={() => onClick(view)}
-    className={`flex items-center p-3 my-1 rounded-lg cursor-pointer transition-colors duration-200 ${
-      activeView === view
-        ? 'bg-primary-light text-primary font-bold dark:bg-primary/20'
-        : 'text-secondary hover:bg-gray-200 dark:text-dark-muted dark:hover:bg-gray-700'
-    }`}
-  >
-    {icon}
-    <span className="ml-3">{label}</span>
-  </li>
-);
+  isDisabled: boolean;
+  onDisabledClick: () => void;
+}> = ({ view, label, icon, activeView, onClick, isDisabled, onDisabledClick }) => {
+    
+    const handleClick = () => {
+        if (isDisabled) {
+            onDisabledClick();
+        } else {
+            onClick(view);
+        }
+    };
+    
+    return (
+      <li
+        onClick={handleClick}
+        className={`flex items-center p-3 my-1 rounded-lg transition-colors duration-200 ${
+          isDisabled 
+            ? 'text-secondary opacity-50 cursor-not-allowed'
+            : activeView === view
+              ? 'bg-primary-light text-primary font-bold dark:bg-primary/20'
+              : 'text-secondary hover:bg-gray-200 dark:text-dark-muted dark:hover:bg-gray-700 cursor-pointer'
+        }`}
+      >
+        {icon}
+        <span className="ml-3">{label}</span>
+      </li>
+    );
+};
 
-const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, onLogout }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, onLogout, isSessionActive, onNavAttempt }) => {
   const [theme, toggleTheme] = useTheme();
+
+  const handleDisabledNav = () => {
+    onNavAttempt('Tetap fokus, tidak bisa membuka tab lain');
+  };
 
   return (
     <aside className="w-64 bg-white dark:bg-dark-card shadow-md flex flex-col p-4">
@@ -50,10 +72,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, onLogout }
       
       <nav className="flex-grow">
         <ul>
-          <NavItem view="dashboard" label="Dashboard" icon={<DashboardIcon />} activeView={activeView} onClick={setActiveView} />
-          <NavItem view="start-focus" label="Mulai Fokus" icon={<PlayOutlineIcon />} activeView={activeView} onClick={setActiveView} />
-          <NavItem view="statistics" label="Statistik" icon={<ChartIcon />} activeView={activeView} onClick={setActiveView} />
-          <NavItem view="tips-tricks" label="Tips & Trik" icon={<LightbulbIcon />} activeView={activeView} onClick={setActiveView} />
+          <NavItem view="dashboard" label="Dashboard" icon={<DashboardIcon />} activeView={activeView} onClick={setActiveView} isDisabled={isSessionActive} onDisabledClick={handleDisabledNav} />
+          <NavItem view="start-focus" label="Mulai Fokus" icon={<PlayOutlineIcon />} activeView={activeView} onClick={setActiveView} isDisabled={isSessionActive} onDisabledClick={handleDisabledNav} />
+          <NavItem view="statistics" label="Statistik" icon={<ChartIcon />} activeView={activeView} onClick={setActiveView} isDisabled={isSessionActive} onDisabledClick={handleDisabledNav} />
+          <NavItem view="tips-tricks" label="Tips & Trik" icon={<LightbulbIcon />} activeView={activeView} onClick={setActiveView} isDisabled={isSessionActive} onDisabledClick={handleDisabledNav} />
+          <NavItem view="notes" label="Catatan" icon={<NoteIcon />} activeView={activeView} onClick={setActiveView} isDisabled={isSessionActive} onDisabledClick={handleDisabledNav} />
         </ul>
       </nav>
 

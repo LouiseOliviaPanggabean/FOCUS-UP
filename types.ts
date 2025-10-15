@@ -5,7 +5,7 @@ export enum SessionMode {
 
 export type TimePattern = 'pomodoro' | 'deep-work' | 'custom';
 
-export type View = 'dashboard' | 'start-focus' | 'statistics' | 'tips-tricks';
+export type View = 'dashboard' | 'start-focus' | 'statistics' | 'tips-tricks' | 'notes';
 
 export interface SessionSettings {
   targetMinutes: number;
@@ -33,6 +33,12 @@ export interface User {
   email: string;
   password?: string; // Stored for mock auth, not passed in props
   joinDate: string; // ISO String
+}
+
+export interface Note {
+  id: string;
+  content: string;
+  createdAt: string; // ISO String
 }
 
 // FIX: Add LeaderboardEntry and UserTip types to resolve import errors.

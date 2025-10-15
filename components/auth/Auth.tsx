@@ -9,6 +9,17 @@ interface AuthProps {
 
 const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
   const [isRegistering, setIsRegistering] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const handleRegistrationComplete = () => {
+    setIsRegistering(false);
+    setSuccessMessage('Registration successful! You can now sign in.');
+  };
+
+  const toggleView = () => {
+    setIsRegistering(!isRegistering);
+    setSuccessMessage('');
+  };
 
   return (
     <div className="w-full max-w-md bg-white dark:bg-dark-card p-8 rounded-lg shadow-md">
@@ -18,14 +29,14 @@ const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
       </div>
 
       {isRegistering ? (
-        <Register onRegisterSuccess={onLoginSuccess} />
+        <Register onRegisterSuccess={handleRegistrationComplete} />
       ) : (
-        <Login onLoginSuccess={onLoginSuccess} />
+        <Login onLoginSuccess={onLoginSuccess} successMessage={successMessage} />
       )}
 
       <div className="mt-6 text-center">
         <button
-          onClick={() => setIsRegistering(!isRegistering)}
+          onClick={toggleView}
           className="text-sm text-primary hover:underline"
         >
           {isRegistering ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}

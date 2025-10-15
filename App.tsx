@@ -9,11 +9,13 @@ import TipsAndTricks from './components/TipsAndTricks';
 import Sidebar from './components/layout/Sidebar';
 import Dashboard from './components/dashboard/Dashboard';
 import { useTheme } from './hooks/useTheme';
+import Notes from './components/Notes';
 
 const App: React.FC = () => {
   useTheme(); // Initialize and apply theme from local storage
   const [currentUser, setCurrentUser] = useLocalStorage<User | null>('focusup-currentUser', null);
   const [activeView, setActiveView] = useState<View>('dashboard');
+  const [notification, setNotification] = useState<string | null>(null);
 
   const userProgressKey = useMemo(() => 
     currentUser ? `userProgress_${currentUser.id}` : 'userProgress_guest',
@@ -28,6 +30,11 @@ const App: React.FC = () => {
   const [settings, setSettings] = useState<SessionSettings | null>(null);
   const [isSessionActive, setIsSessionActive] = useState(false);
   
+  const showNotification = (message: string) => {
+    setNotification(message);
+    setTimeout(() => setNotification(null), 3000);
+  };
+
   const handleLogout = () => {
     setCurrentUser(null);
     setIsSessionActive(false);
@@ -77,6 +84,8 @@ const App: React.FC = () => {
         return <Progress userProgress={userProgress} />;
       case 'tips-tricks':
         return <TipsAndTricks />;
+      case 'notes':
+        return <Notes user={currentUser!} />;
       default:
         return <Dashboard user={currentUser!} progress={userProgress} setActiveView={setActiveView} />;
     }
@@ -93,10 +102,17 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-light dark:bg-dark-bg text-dark dark:text-dark-text font-sans">
+      {notification && (
+        <div className="fixed top-5 right-5 bg-danger text-white p-3 rounded-lg shadow-lg z-50 animate-fade-in">
+          {notification}
+        </div>
+      )}
       <Sidebar 
         activeView={activeView} 
         setActiveView={setActiveView}
         onLogout={handleLogout}
+        isSessionActive={isSessionActive}
+        onNavAttempt={showNotification}
       />
       <main className="flex-1 p-6 sm:p-10 overflow-y-auto">
         {isSessionActive && settings ? (
