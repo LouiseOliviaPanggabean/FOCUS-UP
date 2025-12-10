@@ -1,3 +1,4 @@
+
 export enum SessionMode {
   DEFAULT = 'default',
   CUSTOM = 'custom',
@@ -19,6 +20,7 @@ export interface SessionRecord {
   date: string; // ISO string
   durationMinutes: number;
   targetMet: boolean;
+  targetDuration?: number; // Added for T8
 }
 
 export interface UserProgress {
@@ -41,7 +43,6 @@ export interface Note {
   createdAt: string; // ISO String
 }
 
-// FIX: Add LeaderboardEntry and UserTip types to resolve import errors.
 export interface LeaderboardEntry {
   id: string;
   name: string;

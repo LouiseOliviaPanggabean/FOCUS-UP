@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { SessionSettings } from '../types';
 import { PlayIcon, PauseIcon, StopIcon } from './icons/TimerIcons';
@@ -17,9 +18,19 @@ const Timer: React.FC<TimerProps> = ({ settings, onEndSession, isRunning, setIsR
   const [mode, setMode] = useState<TimerMode>('focus');
   const [secondsLeft, setSecondsLeft] = useState(settings.focusMinutes * 60);
   const [totalFocusSeconds, setTotalFocusSeconds] = useState(0);
+  const [showAlert, setShowAlert] = useState<{message: string, type: 'success' | 'info'} | null>(null);
 
   const switchMode = useCallback(() => {
     const nextMode = mode === 'focus' ? 'break' : 'focus';
+    
+    // Show visual notification for T6
+    const message = nextMode === 'break' 
+        ? "Waktu Fokus Selesai! Saatnya istirahat sejenak." 
+        : "Istirahat Selesai! Kembali fokus.";
+    
+    setShowAlert({ message, type: nextMode === 'break' ? 'success' : 'info' });
+    setTimeout(() => setShowAlert(null), 5000);
+
     setMode(nextMode);
     setSecondsLeft(
       (nextMode === 'focus' ? settings.focusMinutes : settings.breakMinutes) * 60
@@ -61,16 +72,22 @@ const Timer: React.FC<TimerProps> = ({ settings, onEndSession, isRunning, setIsR
   const progressPercentage = Math.min((totalFocusMinutes / settings.targetMinutes) * 100, 100);
 
   return (
-    <div className="flex flex-col items-center p-4">
+    <div className="flex flex-col items-center p-4 relative">
+      {showAlert && (
+          <div className={`absolute -top-10 left-0 right-0 mx-auto w-full max-w-sm p-3 rounded-lg text-center shadow-lg text-white font-bold animate-fade-in ${showAlert.type === 'success' ? 'bg-success' : 'bg-primary'}`}>
+              {showAlert.message}
+          </div>
+      )}
+
       <div className={`text-xl font-semibold mb-4 px-4 py-1 rounded-full uppercase tracking-widest ${mode === 'focus' ? 'bg-primary text-white' : 'bg-success text-white'}`}>
-        {mode}
+        {mode === 'focus' ? 'Fokus' : 'Istirahat'}
       </div>
       <div className="text-8xl font-mono font-bold text-dark dark:text-dark-text mb-6">
         {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
       </div>
       
       <div className="w-full max-w-md mb-6">
-          <p className="text-center text-muted dark:text-dark-muted mb-2">Total Focus: {totalFocusMinutes} min / {settings.targetMinutes} min</p>
+          <p className="text-center text-muted dark:text-dark-muted mb-2">Total Fokus: {totalFocusMinutes} min / {settings.targetMinutes} min</p>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
               <div 
                   className="bg-primary h-4 rounded-full transition-all duration-500" 

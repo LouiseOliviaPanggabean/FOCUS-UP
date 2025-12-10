@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { User, UserProgress, View } from '../../types';
 import { timeSince } from './helpers';
@@ -16,7 +17,7 @@ const ProfileSummary: React.FC<{ user: User, progress: UserProgress }> = ({ user
         <div className="bg-white dark:bg-dark-card p-6 rounded-lg shadow-md h-full">
             <h3 className="font-bold text-lg mb-4">Ringkasan Profil</h3>
             <div className="flex items-center mb-4">
-                <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center text-xl font-bold mr-4">
+                <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center text-xl font-bold mr-4 leading-none">
                     {user.name.charAt(0)}
                 </div>
                 <div>
@@ -81,7 +82,8 @@ const DailyProgress: React.FC<{ progress: UserProgress }> = ({ progress }) => {
 };
 
 const RecentActivity: React.FC<{ progress: UserProgress }> = ({ progress }) => {
-    const recentSessions = progress.sessions.slice(0, 4);
+    // Fix for T13: Slice from the END of the array to get the most recent sessions, then reverse to show newest first.
+    const recentSessions = [...progress.sessions].reverse().slice(0, 4);
 
     return (
         <div className="bg-white dark:bg-dark-card p-6 rounded-lg shadow-md">
@@ -107,7 +109,12 @@ const RecentActivity: React.FC<{ progress: UserProgress }> = ({ progress }) => {
                                     </p>
                                 </div>
                             </div>
-                            <span className="font-bold text-lg text-primary">{session.durationMinutes}m</span>
+                            <div className="text-right">
+                                <span className="font-bold text-lg text-primary block">{session.durationMinutes}m</span>
+                                {session.targetDuration && (
+                                    <span className="text-xs text-muted dark:text-dark-muted">Target: {session.targetDuration}m</span>
+                                )}
+                            </div>
                         </li>
                     ))}
                 </ul>

@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { SessionSettings, UserProgress, User, View } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -16,6 +17,7 @@ const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useLocalStorage<User | null>('focusup-currentUser', null);
   const [activeView, setActiveView] = useState<View>('dashboard');
   const [notification, setNotification] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // For Mobile T2
 
   const userProgressKey = useMemo(() => 
     currentUser ? `userProgress_${currentUser.id}` : 'userProgress_guest',
@@ -42,6 +44,7 @@ const App: React.FC = () => {
     setIsTimerRunning(false);
     setSettings(null);
     setActiveView('dashboard');
+    setIsSidebarOpen(false);
   };
 
   const startSession = (newSettings: SessionSettings) => {
@@ -62,6 +65,7 @@ const App: React.FC = () => {
         date: new Date().toISOString(),
         durationMinutes: focusMinutes,
         targetMet: focusMinutes >= targetMinutes,
+        targetDuration: targetMinutes, // Fix T8: Save target minutes
       };
 
       setUserProgress(prev => ({
@@ -76,8 +80,6 @@ const App: React.FC = () => {
     setActiveView('dashboard'); // Return to dashboard after session
   };
   
-  const currentUserTotalMinutes = userProgress.totalFocusMinutes;
-
   const renderView = () => {
     switch (activeView) {
       case 'dashboard':
@@ -85,7 +87,7 @@ const App: React.FC = () => {
       case 'start-focus':
         return <Settings onStart={startSession} />;
       case 'statistics':
-        return <Progress userProgress={userProgress} />;
+        return <Progress userProgress={userProgress} user={currentUser!} />;
       case 'tips-tricks':
         return <TipsAndTricks />;
       case 'notes':
@@ -105,20 +107,36 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen bg-light dark:bg-dark-bg text-dark dark:text-dark-text font-sans">
+    <div className="flex h-screen bg-light dark:bg-dark-bg text-dark dark:text-dark-text font-sans overflow-hidden">
       {notification && (
         <div className="fixed top-5 right-5 bg-danger text-white p-3 rounded-lg shadow-lg z-50 animate-fade-in">
           {notification}
         </div>
       )}
+      
+      {/* Mobile Hamburger Button */}
+      <div className="md:hidden fixed top-4 left-4 z-40">
+        <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
+            className="p-2 bg-white dark:bg-dark-card rounded-md shadow-md"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+      </div>
+
       <Sidebar 
         activeView={activeView} 
-        setActiveView={setActiveView}
+        setActiveView={(view) => { setActiveView(view); setIsSidebarOpen(false); }}
         onLogout={handleLogout}
         isSessionActive={isTimerRunning}
         onNavAttempt={showNotification}
+        isOpen={isSidebarOpen} // Pass open state to sidebar
+        onClose={() => setIsSidebarOpen(false)}
       />
-      <main className="flex-1 p-6 sm:p-10 overflow-y-auto">
+      
+      <main className="flex-1 p-6 sm:p-10 overflow-y-auto w-full pt-16 md:pt-10">
         {isSessionActive && settings ? (
           <div className="bg-white dark:bg-dark-card rounded-lg shadow-md p-6 max-w-2xl mx-auto">
             <Timer 

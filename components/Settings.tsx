@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { SessionSettings, TimePattern } from '../types';
 import { PlayOutlineIcon } from './icons/SidebarIcons';
 
@@ -7,11 +8,13 @@ interface SettingsProps {
 }
 
 const Settings: React.FC<SettingsProps> = ({ onStart }) => {
-  const [targetMinutes, setTargetMinutes] = useState(120);
+  // Use string to allow empty input during typing (Fix for T9)
+  const [targetMinutesStr, setTargetMinutesStr] = useState("120");
   const [timePattern, setTimePattern] = useState<TimePattern>('pomodoro');
   
   const [customFocus, setCustomFocus] = useState(45);
   const [customBreak, setCustomBreak] = useState(15);
+  const [error, setError] = useState<string | null>(null);
 
   const getPatternConfig = (pattern: TimePattern) => {
     switch (pattern) {
@@ -21,9 +24,38 @@ const Settings: React.FC<SettingsProps> = ({ onStart }) => {
     }
   };
 
+  const handleBlur = () => {
+      // Validate on blur
+      let val = parseInt(targetMinutesStr, 10);
+      if (isNaN(val) || val < 30) val = 30;
+      if (val > 1440) val = 1440; // Max 24 hours (Fix for T14)
+      setTargetMinutesStr(val.toString());
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
+    let targetMinutes = parseInt(targetMinutesStr, 10);
+    if (isNaN(targetMinutes) || targetMinutes < 30) {
+        targetMinutes = 30;
+        setTargetMinutesStr("30");
+    }
+
     const config = getPatternConfig(timePattern);
+
+    // Validation for T3: Custom focus cannot exceed target
+    if (timePattern === 'custom' && config.focus > targetMinutes) {
+        setError(`Waktu fokus (${config.focus} menit) tidak boleh melebihi target waktu belajar (${targetMinutes} menit).`);
+        return;
+    }
+    
+    // Additional sanity check
+    if (config.focus + config.break > targetMinutes * 2) {
+         setError("Durasi siklus (Fokus + Istirahat) terlalu panjang untuk target ini.");
+         return;
+    }
+
     onStart({
       targetMinutes,
       timePattern,
@@ -59,6 +91,11 @@ const Settings: React.FC<SettingsProps> = ({ onStart }) => {
         </div>
       
         <form onSubmit={handleSubmit} className="max-w-xl mx-auto flex flex-col items-center">
+            {error && (
+                <div className="w-full bg-danger/10 border border-danger text-danger px-4 py-3 rounded-md mb-6 text-center">
+                    {error}
+                </div>
+            )}
             <div className="bg-white dark:bg-dark-card p-8 rounded-lg shadow-md w-full mb-8">
                 <label htmlFor="target-minutes" className="block text-center text-lg font-medium text-muted dark:text-dark-muted mb-4">
                     Input Target Waktu Belajar (Total)
@@ -66,12 +103,14 @@ const Settings: React.FC<SettingsProps> = ({ onStart }) => {
                 <input
                     type="number"
                     id="target-minutes"
-                    value={targetMinutes}
-                    onChange={(e) => setTargetMinutes(Math.max(30, parseInt(e.target.value, 10)))}
+                    value={targetMinutesStr}
+                    onChange={(e) => setTargetMinutesStr(e.target.value)}
+                    onBlur={handleBlur}
                     min="30"
+                    max="1440"
                     className="w-full text-center text-7xl font-bold border-0 border-b-2 border-primary bg-transparent text-dark dark:text-dark-text focus:ring-0 focus:border-primary-dark"
                 />
-                <p className="text-center text-muted dark:text-dark-muted mt-2">Menit (Misal: 120 menit = 2 jam)</p>
+                <p className="text-center text-muted dark:text-dark-muted mt-2">Menit (Min: 30, Max: 1440)</p>
 
                 <h3 className="text-center text-lg font-medium text-muted dark:text-dark-muted mt-8 mb-4">Opsi Pola Waktu</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -84,11 +123,27 @@ const Settings: React.FC<SettingsProps> = ({ onStart }) => {
                     <div className="grid grid-cols-2 gap-4 mt-4 animate-fade-in bg-primary-light dark:bg-primary/20 p-4 rounded-lg">
                         <div>
                             <label htmlFor="custom-focus" className="block text-sm font-medium text-muted dark:text-dark-muted mb-1">Fokus (menit)</label>
-                            <input type="number" id="custom-focus" value={customFocus} onChange={e => setCustomFocus(parseInt(e.target.value))} min="1" className="w-full rounded-md border-gray-300 dark:bg-dark-card dark:border-gray-600 shadow-sm" />
+                            <input 
+                                type="number" 
+                                id="custom-focus" 
+                                value={customFocus} 
+                                onChange={e => setCustomFocus(Math.min(1440, parseInt(e.target.value) || 0))} 
+                                min="1" 
+                                max="1440"
+                                className="w-full rounded-md border-gray-300 dark:bg-dark-card dark:border-gray-600 shadow-sm text-dark dark:text-dark-text" 
+                            />
                         </div>
                         <div>
                             <label htmlFor="custom-break" className="block text-sm font-medium text-muted dark:text-dark-muted mb-1">Istirahat (menit)</label>
-                            <input type="number" id="custom-break" value={customBreak} onChange={e => setCustomBreak(parseInt(e.target.value))} min="1" className="w-full rounded-md border-gray-300 dark:bg-dark-card dark:border-gray-600 shadow-sm" />
+                            <input 
+                                type="number" 
+                                id="custom-break" 
+                                value={customBreak} 
+                                onChange={e => setCustomBreak(Math.min(1440, parseInt(e.target.value) || 0))} 
+                                min="1" 
+                                max="1440"
+                                className="w-full rounded-md border-gray-300 dark:bg-dark-card dark:border-gray-600 shadow-sm text-dark dark:text-dark-text" 
+                            />
                         </div>
                     </div>
                 )}

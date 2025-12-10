@@ -1,14 +1,16 @@
+
 import React, { useMemo } from 'react';
-import { UserProgress } from '../types';
+import { UserProgress, User } from '../types';
 import { TrophyIcon, ChartBarIcon, CheckCircleIcon, XCircleIcon, CalendarIcon, FireIcon } from './icons/StatIcons';
 import { ChartIcon } from './icons/SidebarIcons';
 import SessionChart from './stats/SessionChart';
 
 interface ProgressProps {
   userProgress: UserProgress;
+  user?: User; // Pass user for T10 date filtering
 }
 
-const Progress: React.FC<ProgressProps> = ({ userProgress }) => {
+const Progress: React.FC<ProgressProps> = ({ userProgress, user }) => {
   const { highestTracker, dailyTracker, targetsMet, targetsMissed } = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
     
@@ -74,7 +76,10 @@ const Progress: React.FC<ProgressProps> = ({ userProgress }) => {
                 <CalendarIcon className="w-8 h-8 text-primary mr-4" />
                 <div>
                   <p className="text-sm text-muted dark:text-dark-muted">Total Fokus Minggu Ini</p>
-                  <p className="text-2xl font-bold text-dark dark:text-dark-text">{(weeklyStats.totalWeeklyMinutes / 60).toFixed(1)} <span className="text-base font-normal">jam</span></p>
+                  <p className="text-xl font-bold text-dark dark:text-dark-text">
+                      {/* Fix T21: More precise formatting */}
+                      {(weeklyStats.totalWeeklyMinutes / 60).toFixed(2)} <span className="text-base font-normal">jam</span>
+                  </p>
                 </div>
               </div>
               <div className="flex items-center bg-light dark:bg-dark-bg p-4 rounded-md">
@@ -122,7 +127,7 @@ const Progress: React.FC<ProgressProps> = ({ userProgress }) => {
         </div>
         <div className="bg-white dark:bg-dark-card p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-bold text-dark dark:text-dark-text mb-4">Riwayat Fokus 7 Hari</h3>
-            <SessionChart sessions={userProgress.sessions} />
+            <SessionChart sessions={userProgress.sessions} user={user} />
         </div>
       </div>
     </div>

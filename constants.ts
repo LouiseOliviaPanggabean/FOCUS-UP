@@ -1,23 +1,24 @@
+
 export const DEFAULT_FOCUS_MINUTES = 45;
 export const DEFAULT_BREAK_MINUTES = 5;
 
 export const LEARNING_TIPS: string[] = [
-  "Use the Feynman Technique: try to explain a concept in simple terms, as if teaching it to someone else.",
-  "Space out your learning sessions. Spaced repetition is more effective than cramming.",
-  "Get enough sleep. Your brain consolidates memories while you rest.",
-  "Test yourself frequently. Active recall strengthens memory pathways.",
-  "Switch between different subjects to keep your mind engaged and prevent burnout.",
-  "Stay hydrated. Dehydration can impair concentration and cognitive function.",
-  "Minimize distractions. Put your phone away and use a dedicated study space.",
-  "Take regular breaks to rest your mind. The Pomodoro Technique is great for this.",
-  "Connect new information to what you already know to build stronger mental models.",
-  "Use mnemonic devices like acronyms or rhymes to remember lists and facts.",
-  "Teach what you learn. It's one of the most effective ways to solidify your own understanding.",
-  "Create a dedicated study playlist with instrumental music to help you focus without being distracted by lyrics.",
-  "Break down large tasks into smaller, manageable chunks to avoid feeling overwhelmed.",
-  "Review your notes within 24 hours of making them to improve retention.",
-  "Don't be afraid to ask questions. Curiosity is the engine of intellectual growth.",
-  "Practice mindfulness or meditation for a few minutes before studying to clear your mind.",
+  "Gunakan Teknik Feynman: coba jelaskan sebuah konsep dengan kata-kata sederhana, seolah-olah mengajarinya kepada orang lain.",
+  "Beri jarak sesi belajar Anda. Pengulangan berjarak lebih efektif daripada belajar sistem kebut semalam.",
+  "Tidur yang cukup. Otak Anda mengkonsolidasikan ingatan saat Anda beristirahat.",
+  "Sering-seringlah menguji diri sendiri. Mengingat kembali secara aktif memperkuat jalur memori.",
+  "Beralihlah di antara mata pelajaran yang berbeda agar pikiran Anda tetap terlibat dan mencegah kebosanan.",
+  "Tetap terhidrasi. Dehidrasi dapat mengganggu konsentrasi dan fungsi kognitif.",
+  "Minimalkan gangguan. Singkirkan ponsel Anda dan gunakan ruang belajar khusus.",
+  "Ambil istirahat teratur untuk mengistirahatkan pikiran Anda. Teknik Pomodoro sangat bagus untuk ini.",
+  "Hubungkan informasi baru dengan apa yang sudah Anda ketahui untuk membangun model mental yang lebih kuat.",
+  "Gunakan perangkat mnemonik seperti akronim atau rima untuk mengingat daftar dan fakta.",
+  "Ajarkan apa yang Anda pelajari. Ini adalah salah satu cara paling efektif untuk memantapkan pemahaman Anda sendiri.",
+  "Buat daftar putar belajar khusus dengan musik instrumental untuk membantu Anda fokus tanpa terganggu oleh lirik.",
+  "Pecah tugas besar menjadi bagian-bagian yang lebih kecil dan dapat dikelola agar tidak merasa kewalahan.",
+  "Tinjau catatan Anda dalam waktu 24 jam setelah membuatnya untuk meningkatkan retensi.",
+  "Jangan takut bertanya. Keingintahuan adalah mesin pertumbuhan intelektual.",
+  "Latih perhatian penuh atau meditasi selama beberapa menit sebelum belajar untuk menjernihkan pikiran Anda.",
 ];
 
 
@@ -34,7 +35,6 @@ export const MOTIVATIONAL_MESSAGES: string[] = [
   "The only thing standing between you and your goal is that story you keep telling yourself that you can't achieve it."
 ];
 
-// FIX: Add MOCK_LEADERBOARD_DATA to resolve import error.
 export const MOCK_LEADERBOARD_DATA: { id: number; name: string; totalMinutes: number }[] = [
     { id: 101, name: 'Rizky S.', totalMinutes: 2430 },
     { id: 102, name: 'Dewi L.', totalMinutes: 2250 },

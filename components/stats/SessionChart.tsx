@@ -1,13 +1,15 @@
+
 import React, { useEffect, useRef } from 'react';
-import { SessionRecord } from '../../types';
+import { SessionRecord, User } from '../../types';
 import { Chart } from 'chart.js/auto';
 import { useTheme } from '../../hooks/useTheme';
 
 interface SessionChartProps {
   sessions: SessionRecord[];
+  user?: User; // Added user prop for joinDate filtering (T10)
 }
 
-const SessionChart: React.FC<SessionChartProps> = ({ sessions }) => {
+const SessionChart: React.FC<SessionChartProps> = ({ sessions, user }) => {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstance = useRef<Chart | null>(null);
   const [theme] = useTheme();
@@ -22,7 +24,14 @@ const SessionChart: React.FC<SessionChartProps> = ({ sessions }) => {
         return d.toISOString().split('T')[0];
     }).reverse();
 
-    const dataByDay = last7Days.reduce((acc, day) => {
+    // Filter labels based on join date (Fix T10)
+    let filteredLabels = last7Days;
+    if (user) {
+        const joinDateStr = user.joinDate.split('T')[0];
+        filteredLabels = last7Days.filter(day => day >= joinDateStr);
+    }
+
+    const dataByDay = filteredLabels.reduce((acc, day) => {
         acc[day] = 0;
         return acc;
     }, {} as { [key: string]: number });
@@ -35,7 +44,7 @@ const SessionChart: React.FC<SessionChartProps> = ({ sessions }) => {
     });
 
     const chartData = Object.values(dataByDay);
-    const chartLabels = last7Days.map(day => new Date(day).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric'}));
+    const chartLabels = filteredLabels.map(day => new Date(day).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric'}));
 
     const ctx = chartRef.current.getContext('2d');
     if (!ctx) return;
@@ -95,7 +104,7 @@ const SessionChart: React.FC<SessionChartProps> = ({ sessions }) => {
         chartInstance.current?.destroy();
     };
 
-  }, [sessions, theme]);
+  }, [sessions, theme, user]);
 
   return <div style={{ height: '300px' }}><canvas ref={chartRef} /></div>;
 };

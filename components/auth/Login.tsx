@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { User } from '../../types';
@@ -24,14 +25,14 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, successMessage }) => {
     if (user) {
       onLoginSuccess(user);
     } else {
-      setError('Invalid email or password.');
+      setError('Email atau password salah.');
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {error && <p className="text-danger text-sm text-center">{error}</p>}
-      {successMessage && <p className="text-success text-sm text-center">{successMessage}</p>}
+      {error && <p className="text-danger text-sm text-center font-semibold">{error}</p>}
+      {successMessage && <p className="text-success text-sm text-center font-semibold">{successMessage}</p>}
       <div>
         <label htmlFor="email-login" className="block text-sm font-medium text-muted dark:text-dark-muted mb-2">
           Email
@@ -42,7 +43,8 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, successMessage }) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full bg-light dark:bg-dark-bg border-gray-300 dark:border-gray-600 text-dark dark:text-dark-text rounded-md p-2 focus:ring-primary focus:border-primary"
+          className="w-full bg-light dark:bg-dark-bg border-2 border-gray-400 dark:border-gray-500 text-dark dark:text-dark-text rounded-md p-2 focus:ring-primary focus:border-primary"
+          placeholder="Masukkan email anda"
         />
       </div>
       <div>
@@ -56,7 +58,8 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, successMessage }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full bg-light dark:bg-dark-bg border-gray-300 dark:border-gray-600 text-dark dark:text-dark-text rounded-md p-2 pr-10 focus:ring-primary focus:border-primary"
+            className="w-full bg-light dark:bg-dark-bg border-2 border-gray-400 dark:border-gray-500 text-dark dark:text-dark-text rounded-md p-2 pr-10 focus:ring-primary focus:border-primary"
+            placeholder="Masukkan password anda"
           />
           <button
             type="button"
@@ -68,8 +71,8 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, successMessage }) => {
           </button>
         </div>
       </div>
-      <button type="submit" className="w-full bg-primary text-white font-bold py-3 px-4 rounded-md hover:bg-opacity-90 transition-colors duration-300">
-        Sign In
+      <button type="submit" className="w-full bg-primary text-white font-bold py-3 px-4 rounded-md hover:bg-opacity-90 transition-colors duration-300 shadow-md">
+        Masuk
       </button>
     </form>
   );
